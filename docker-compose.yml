@@ -1,0 +1,52 @@
+version: '3.9'
+
+services:
+  # MYSQL Database
+  database:
+    image: mysql:8.0
+    volumes: 
+      - db_data:/var/lib/mysql
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password
+    environment: 
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+    networks: 
+      - wpsite
+  # WORDPRESS
+  wordpress:
+    depends_on:
+      - database 
+    image: wordpress:latest
+    ports: 
+      - '8000:100'
+    restart: always
+    volumes: 
+      - './:/var/www/html'
+      - ./uploads.ini:/usr/local/etc/php/conf.d/uploads.ini 
+    environment: 
+      WORDPRESS_DB_HOST: database:3309
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+    networks: 
+      - wpsite
+  # PHPMYADMIN
+  phpmyadmin:
+    depends_on: 
+      - database
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports: 
+      - '8080:101'
+    environment: 
+      PMA_HOST: database
+      MYSQL_ROOT_PASSWORD: password
+    networks:
+      - wpsite
+        
+networks:
+  wpsite:
+volumes:
+  db_data:
