@@ -21,13 +21,13 @@ services:
       - database 
     image: wordpress:latest
     ports: 
-      - '8000:100'
+      - '8100:80'
     restart: always
     volumes: 
       - './:/var/www/html'
       - ./uploads.ini:/usr/local/etc/php/conf.d/uploads.ini 
     environment: 
-      WORDPRESS_DB_HOST: database:3309
+      WORDPRESS_DB_HOST: database:3306
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: wordpress
     networks: 
@@ -39,7 +39,7 @@ services:
     image: phpmyadmin/phpmyadmin
     restart: always
     ports: 
-      - '8080:101'
+      - '8101:80'
     environment: 
       PMA_HOST: database
       MYSQL_ROOT_PASSWORD: password
