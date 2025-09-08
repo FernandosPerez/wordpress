@@ -1,54 +1,54 @@
-version: '3.9'
-
 services:
-  # MYSQL Database
-  database:
+
+  db:
     image: mysql:8.0
-    volumes: 
-      - db_data:/var/lib/mysql
-    ports: 
-      - '10000:3306'
-    restart: always
-    command: --default-authentication-plugin=mysql_native_password
-    environment: 
-      MYSQL_ROOT_PASSWORD: password
+    restart: unless-stopped
+    ports:
+      - "10000:3306"
+    command: >
+      mysqld
+      --sql_mode=""
+      --character-set-server=utf8
+      --collation-server=utf8_slovenian_ci
+      --init-connect='SET NAMES UTF8;'
+      --innodb-flush-log-at-trx-commit=0
+      --default-authentication-plugin=mysql_native_password
+    environment:
       MYSQL_DATABASE: wordpress
       MYSQL_USER: wordpress
       MYSQL_PASSWORD: wordpress
-    networks: 
-      - wpsite
-  # WORDPRESS
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - ./dump:/docker-entrypoint-initdb.d:ro
+      - ./conf:/etc/mysql/conf.d:ro
+      - persistent:/var/lib/mysql
+    networks:
+      - frontend
+      - backend
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p:wordpress"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
   wordpress:
     depends_on:
-      - database 
+      - db 
     image: wordpress:latest
     ports: 
       - '10001:80'
     restart: always
-    volumes: 
-      - './:/var/www/html'
-      - ./uploads.ini:/usr/local/etc/php/conf.d/uploads.ini 
     environment: 
-      WORDPRESS_DB_HOST: database:3306
+      WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: wordpress
     networks: 
-      - wpsite
-  # PHPMYADMIN
+      - frontend
+
   phpmyadmin:
-    depends_on: 
-      - database
-    image: phpmyadmin/phpmyadmin
-    restart: always
-    ports: 
-      - '10002:80'
-    environment: 
-      PMA_HOST: database
-      MYSQL_ROOT_PASSWORD: password
-    networks:
-      - wpsite
-        
-networks:
-  wpsite:
-volumes:
-  db_data:
+    image: phpmyadmin/phpmyadmin:latest
+    restart: unless-stopped
+    ports:
+      - "10002:80"
+    environment:
