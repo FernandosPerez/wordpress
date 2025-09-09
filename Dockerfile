@@ -44,11 +44,6 @@ RUN useradd -r -u 1000 -g www-data webuser
 RUN mkdir -p /var/log/php \
     && chown -R webuser:www-data /var/log/php \
     && chmod 755 /var/log/php
-    
-COPY  www/  /var/www/html
-# Set proper permissions for web directory
-RUN chown -R webuser:www-data /var/www/html \
-    && chmod -R 777 /var/www/html 
 
 # Switch to non-root user
 USER webuser
