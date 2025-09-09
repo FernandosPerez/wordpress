@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 
-ARG PHP_MEMORY_LIMIT=256M
+ARG PHP_MEMORY_LIMIT=500M
 ARG PHP_MAX_EXECUTION_TIME=600
 ARG PHP_UPLOAD_MAX_FILESIZE=500M
 ARG PHP_POST_MAX_SIZE=500M
@@ -27,7 +27,7 @@ RUN apt-get update \
         gd
 
 # Configure PHP
-RUN echo "memory_limit = 512M" >> /usr/local/etc/php/conf.d/docker-php-memory-limit.ini \
+RUN echo "memory_limit = 500M" >> /usr/local/etc/php/conf.d/docker-php-memory-limit.ini \
     && echo "max_execution_time = 600" >> /usr/local/etc/php/conf.d/docker-php-max-execution-time.ini \
     && echo "upload_max_filesize = 500M" >> /usr/local/etc/php/conf.d/docker-php-upload-max-filesize.ini \
     && echo "post_max_size = 500M" >> /usr/local/etc/php/conf.d/docker-php-post-max-size.ini
