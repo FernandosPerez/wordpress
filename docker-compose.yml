@@ -43,6 +43,10 @@ services:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: wordpress
+    args:
+      PHP_MEMORY_LIMIT: 128M
+      PHP_UPLOAD_MAX_FILESIZE: 200M
+      PHP_POST_MAX_SIZE: 200M
     networks: 
       - frontend
 
